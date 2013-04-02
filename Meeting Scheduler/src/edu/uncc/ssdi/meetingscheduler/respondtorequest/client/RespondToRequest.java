@@ -50,7 +50,7 @@ public class RespondToRequest implements EntryPoint {
 						@Override
 						public void onFailure(Throwable caught) {
 							// TODO Auto-generated method stub
-							
+							MessageBox.info("Something went wrong!", "Server threw an error.", null);
 						}
 
 						@Override
