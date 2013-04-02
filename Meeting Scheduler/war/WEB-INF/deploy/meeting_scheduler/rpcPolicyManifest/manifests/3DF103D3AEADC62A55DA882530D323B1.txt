@@ -1,0 +1,2 @@
+serviceClass: edu.uncc.ssdi.meetingscheduler.client.services.CreatePollService
+path: A45CB08D2770EA806A1420BB6C134B36.gwt.rpc

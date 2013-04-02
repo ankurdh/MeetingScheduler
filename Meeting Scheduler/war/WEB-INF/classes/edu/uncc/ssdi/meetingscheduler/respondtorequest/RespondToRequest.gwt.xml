@@ -1,0 +1,7 @@
+<module rename-to="respond_to_request">
+    <inherits name="edu.uncc.ssdi.meetingscheduler.Meeting_Scheduler"/>
+	<inherits name="com.google.gwt.user.User"/>
+	<inherits name='com.google.gwt.user.theme.clean.Clean'/>
+	<inherits name='com.extjs.gxt.ui.GXT' />
+	<entry-point class="edu.uncc.ssdi.meetingscheduler.respondtorequest.client.RespondToRequest"/>
+</module>

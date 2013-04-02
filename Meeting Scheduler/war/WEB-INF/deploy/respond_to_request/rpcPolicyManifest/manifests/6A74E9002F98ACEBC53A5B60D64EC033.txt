@@ -1,0 +1,2 @@
+serviceClass: edu.uncc.ssdi.meetingscheduler.client.GreetingService
+path: 6D53DF48D8979316D04D56404DC4A4B9.gwt.rpc

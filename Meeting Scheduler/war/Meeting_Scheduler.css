@@ -1,0 +1,145 @@
+/** Add css rules here for your application. */
+
+
+/** Example rules used by the template application (remove for your app) */
+h1 {
+  font-size: 2em;
+  font-weight: bold;
+  color: #777777;
+  margin: 40px 0px 70px;
+  text-align: center;
+}
+
+.button3{
+    background-color: #A5B8DA;
+    background-image: -moz-linear-gradient(center top , #A5B8DA, #7089B3);
+    border-color: #758FBA #6C84AB #5C6F91;
+    border-radius: 18px 18px 18px 18px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 0 1px 0 0 #AEC3E5 inset;
+    color: #FFFFFF;
+    font: bold 11px/1 "Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Verdana,sans-serif;
+    padding: 8px 0;
+    text-align: center;
+    text-shadow: 0 -1px 1px #64799E;
+    text-transform: uppercase;
+    width: 150px;
+}
+
+.addPanel {
+  margin: 10px 0px 15px 0px;
+}
+
+.fullOccupy {
+	width: 100%;
+}
+
+.alignLeft {
+	align: left;
+}
+
+.alignRight {
+	align: right;
+}
+
+.sendButton {
+  display: block;
+  font-size: 16pt;
+}
+
+.loginUserNamePassword {
+  background-color: lightblue;
+  font-size: 14pt;
+  align: center;
+  color: black;
+  font-style: italic;
+}
+
+.DateTimeWidgetHeader {
+  background-color: #2062B8;
+  color: white;
+  font-style: italic;
+  column-width:100px;
+}
+
+body {
+  padding: 10px;
+}
+
+.DateTimeWidgetBody {
+  border: 5px solid silver;
+  padding: 2px;
+  margin-bottom:6px;
+  text-align: center;
+}
+
+.NonDateColumn{
+	width:4em;
+}
+
+.customeDatePicker {
+  color: red;
+  background: darkblue;
+  border-color: black;
+  padding:2px;
+  color: black; 
+}
+
+.CheckBoxStyle {
+	border:2px dotted #00f;
+	display:block;
+	background: #EEEEFF;
+}
+
+.loginVerticalPanel {
+  border: 1px solid blue;
+  padding: 2px;
+  margin-bottom:6px;
+}
+
+/** Most GWT widgets already have a style name defined */
+.gwt-DialogBox {
+  width: 400px;
+}
+
+.dialogVPanel {
+  margin: 5px;
+}
+
+.paddedHorizontalPanel {
+    padding-left: 20px;
+}
+
+.alignCenter {
+	align: center;
+}
+
+.verticalSpacing {
+	padding-bottom: 1em;
+}
+
+.centerTableRow tr {
+	align: center;
+}
+
+.my-FlexTable td {
+   text-align: center;
+   align: center;
+   colspan: 2;
+   border-spacing: 5em;
+   padding-bottom: 1em;
+}
+
+.80px-TextBox{
+	width: 150px	
+}
+
+.serverResponseLabelError {
+  color: red;
+}
+
+/** Set ids using widget.getElement().setId("idOfElement") */
+#closeButton {
+  margin: 15px 6px 6px;
+}

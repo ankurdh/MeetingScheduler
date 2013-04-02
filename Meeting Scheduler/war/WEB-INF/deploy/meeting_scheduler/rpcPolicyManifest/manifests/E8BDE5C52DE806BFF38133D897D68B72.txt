@@ -1,0 +1,2 @@
+serviceClass: edu.uncc.ssdi.meetingscheduler.client.services.LoginService
+path: C6137E5491D8F21C7AC48A74D68A9922.gwt.rpc

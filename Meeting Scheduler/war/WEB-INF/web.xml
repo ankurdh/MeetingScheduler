@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee                http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+  <!-- Servlets -->
+  <servlet>
+    <servlet-name>LoginServlet</servlet-name>
+    <servlet-class>edu.uncc.ssdi.meetingscheduler.server.serviceimpl.LoginServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>LoginServlet</servlet-name>
+    <url-pattern>/meeting_scheduler/login</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>CreatePollServlet</servlet-name>
+    <servlet-class>edu.uncc.ssdi.meetingscheduler.server.serviceimpl.CreatePollServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>CreatePollServlet</servlet-name>
+    <url-pattern>/meeting_scheduler/createPoll</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>CreatePollServlet</servlet-name>
+    <url-pattern>/respond_to_request/createPoll</url-pattern>
+  </servlet-mapping>
+  
+  
+  <!-- Default page to serve -->
+  <welcome-file-list>
+    <welcome-file>Meeting_Scheduler.html</welcome-file>
+  </welcome-file-list>
+
+  <servlet>
+    <servlet-name>SystemServiceServlet</servlet-name>
+    <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
+    <init-param>
+      <param-name>services</param-name>
+      <param-value/>
+    </init-param>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>SystemServiceServlet</servlet-name>
+    <url-pattern>/_ah/spi/*</url-pattern>
+  </servlet-mapping>
+  
+    
+  <!-- The below tags are to initialize DB connection at server startup -->
+  <listener>
+ 	<listener-class>edu.uncc.ssdi.meetingscheduler.server.db.DBHelper</listener-class>
+  </listener>
+
+</web-app>
