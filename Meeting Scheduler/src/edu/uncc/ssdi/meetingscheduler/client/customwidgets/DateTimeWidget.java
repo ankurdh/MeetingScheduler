@@ -5,11 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.extjs.gxt.ui.client.core.El;
-import com.extjs.gxt.ui.client.event.ComponentEvent;
-import com.extjs.gxt.ui.client.util.DateWrapper;
-import com.extjs.gxt.ui.client.widget.DatePicker;
-import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -18,7 +13,6 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.SimpleCheckBox;
 
@@ -77,15 +71,30 @@ class MyFlexTable extends FlexTable {
 		setCellSpacing(2);		
 	}
 
+	public boolean contains(Date d){
+		if(currentList.contains(d))
+			return true;
+		
+		return false;
+	}
+	
+	public void remove(Date d){
+		currentList.remove(d);
+		
+		int rows = getRowCount();
+		String dateToDelete = new MyDateFormatter("EEE, MMM d, yyyy").getFormattedDate(d);
+		
+		for(int i = 1 ; i < rows ; i ++){
+			if(getText(i, 0).equals(dateToDelete)){
+				removeRow(i);
+				return;
+			}
+		}
+		
+	}
+	
 	@SuppressWarnings("deprecation")
 	public void addRow(Date d) {
-		
-		if(currentList.contains(d)){
-			
-			MessageBox.info("Error!", "Date already selected.", null);
-			
-			return;
-		}
 		
 		int rows = getRowCount();
 		MyDateFormatter dateFormat = new MyDateFormatter("EEE, MMM d, yyyy");
