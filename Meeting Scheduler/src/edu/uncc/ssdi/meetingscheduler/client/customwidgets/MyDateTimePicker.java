@@ -18,7 +18,7 @@ import edu.uncc.ssdi.meetingscheduler.shared.exceptions.ObjectUnInitializedExcep
 
 public class MyDateTimePicker extends DatePicker {
 	
-	private MyFlexTable timesTable;
+	private CustomFlexTable timesTable;
 	private HorizontalPanel panel;
 	
 	private boolean rangeSelectionChosen = false;
@@ -29,7 +29,7 @@ public class MyDateTimePicker extends DatePicker {
 		
 		panel = new HorizontalPanel();
 		panel.setSpacing(10);
-		timesTable = new MyFlexTable();
+		timesTable = new CustomFlexTable(true);
 		
 		timesTable.setCellSpacing(2);
 		timesTable.setCellPadding(5);
@@ -37,6 +37,10 @@ public class MyDateTimePicker extends DatePicker {
 		panel.add(this);
 		panel.add(timesTable);
 		
+	}
+	
+	public CustomFlexTable getTimesTable(){
+		return timesTable;
 	}
 	
 	public Panel getPanel() {
@@ -114,50 +118,13 @@ public class MyDateTimePicker extends DatePicker {
 			    			firstClickedElement = nextDateEl;
 			    			
 		    			} while (nextDate.before(d));
-		    			
 		    		}
 	    		}
 	    	} else {
 	    		timesTable.addRow(d);
-//	    		e.setStyleName("lightGreenBG");
+	    		e.setBorders(true);
+	    		e.setStyleName("lightGreenBG");
 	    	}
 	    }
-	}
-	
-	@SuppressWarnings("deprecation")
-	public String getTimesAndDatesAsJSON() throws ObjectUnInitializedException {
-		
-		StringBuffer jsonString = new StringBuffer();
-		boolean atleastOneElement = false;
-		jsonString.append("[\n");
-		
-		//TODO iterate over the flex table here and get all the dates and times of selected checkboxes.
-		int noOfRows = timesTable.getRowCount();
-		
-		for(int i = 1 ; i < noOfRows ; i ++){
-			
-			int noOfCols = timesTable.getCellCount(i);
-			for(int j = 1 ; j < noOfCols ; j ++){
-				MyCheckBox checkBox = (MyCheckBox)timesTable.getWidget(i, j);
-				if(checkBox.getValue()){
-					atleastOneElement = true;
-					jsonString.append("{\"dateTime\":\"" + (checkBox.getDate().getYear() + 1900) + "-"
-					+ (checkBox.getDate().getMonth() + 1) + "-"
-					+ (checkBox.getDate().getDate() < 10? ("0" + checkBox.getDate().getDate()) : checkBox.getDate().getDate()) + " "
-					+ (checkBox.getDate().getHours() == 9? "09":checkBox.getDate().getHours()) + ":"
-					+ (checkBox.getDate().getMinutes() == 0?"00":checkBox.getDate().getMinutes()) + ":00\"},\n");
-					
-				}
-			}
-		}
-		
-		if(!atleastOneElement)
-			throw new ObjectUnInitializedException("Please select atleast one date-time(s)!");
-		
-		jsonString.setCharAt(jsonString.lastIndexOf(","), '\n');
-		jsonString.append("]");
-		
-		System.out.println(jsonString.toString());
-		return jsonString.toString();
 	}
 }

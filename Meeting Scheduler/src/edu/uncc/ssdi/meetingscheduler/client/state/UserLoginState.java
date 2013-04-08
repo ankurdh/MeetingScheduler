@@ -21,7 +21,6 @@ public class UserLoginState {
 	public static boolean getUserLoginState(){
 		return userLoggedIn;
 	}
-
 }
 
 class UserDetails {

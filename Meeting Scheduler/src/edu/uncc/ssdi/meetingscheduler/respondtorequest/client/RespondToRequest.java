@@ -16,11 +16,11 @@ package edu.uncc.ssdi.meetingscheduler.respondtorequest.client;
 
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
-import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.RootPanel;
 
 import edu.uncc.ssdi.meetingscheduler.client.services.CreatePollService;
 import edu.uncc.ssdi.meetingscheduler.client.services.CreatePollServiceAsync;
@@ -49,15 +49,18 @@ public class RespondToRequest implements EntryPoint {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							// TODO Auto-generated method stub
 							MessageBox.info("Something went wrong!", "Server threw an error.", null);
 						}
 
 						@Override
 						public void onSuccess(String result) {
 							// TODO Auto-generated method stub
-							if(result != null)
+							if(result != null){
 								MessageBox.info("Reply from Server", "Available Times: " + result, null);
+								
+								RootPanel.get("respondPanel").add(new RespondPanel(result).getPanel());
+								
+							}
 							
 						}
 					});

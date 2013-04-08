@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import edu.uncc.ssdi.meetingscheduler.client.customwidgets.CustomFlexTableHelper;
 import edu.uncc.ssdi.meetingscheduler.client.customwidgets.DateTimeWidget;
 import edu.uncc.ssdi.meetingscheduler.client.services.CreatePollService;
 import edu.uncc.ssdi.meetingscheduler.client.services.CreatePollServiceAsync;
@@ -57,7 +58,7 @@ public class CreatePollPanel implements Panel {
 			public void componentSelected(ButtonEvent ce) {
 				String dateTimeJSONString = null;
 				try {
-					dateTimeJSONString = dateTimeWidget.getDateTimePicker().getTimesAndDatesAsJSON();
+					dateTimeJSONString = CustomFlexTableHelper.getTimesAndDatesAsJSON(dateTimeWidget.getCustomFlexTable());
 				} catch (ObjectUnInitializedException e) {
 					MessageBox.info("Error!", e.getMessage(), null);
 					return;

@@ -36,7 +36,6 @@ public class LoginPanel implements Panel, QueryGenerator, JSONDataRequestor {
 	private Button registerWithGoogleButton;
 	
 	private String query = null;
-	private ServerHandle s = null;
 	private com.google.gwt.user.client.ui.VerticalPanel panel = null;
 	
 	public LoginPanel(){
@@ -171,7 +170,7 @@ public class LoginPanel implements Panel, QueryGenerator, JSONDataRequestor {
 	}
 
 	private Button getRegisterWithGoogleButton() {
-		Button btn = new Button("Register with Google Account", new SelectionListener<ButtonEvent>(){
+		Button btn = new Button("Login with Google Account", new SelectionListener<ButtonEvent>(){
 
 			@Override
 			public void componentSelected(ButtonEvent ce) {
