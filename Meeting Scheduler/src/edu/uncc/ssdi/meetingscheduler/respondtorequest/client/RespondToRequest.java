@@ -54,12 +54,8 @@ public class RespondToRequest implements EntryPoint {
 
 						@Override
 						public void onSuccess(String result) {
-							// TODO Auto-generated method stub
 							if(result != null){
-								MessageBox.info("Reply from Server", "Available Times: " + result, null);
-								
-								RootPanel.get("respondPanel").add(new RespondPanel(result).getPanel());
-								
+								RootPanel.get("respondPanel").add(new RespondPanel(result, pollId).getPanel());
 							}
 							
 						}

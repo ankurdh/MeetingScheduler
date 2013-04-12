@@ -8,7 +8,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 
-import edu.uncc.ssdi.meetingscheduler.respondtorequest.client.jsonoverlayclasses.MeetingPollInfo;
+import edu.uncc.ssdi.meetingscheduler.client.jsonoverlayclasses.MeetingPollInfo;
 
 public class CustomFlexTable extends FlexTable {
 	
@@ -55,20 +55,8 @@ public class CustomFlexTable extends FlexTable {
 		this(initForPollCreation, null);
 	}
 
-	@SuppressWarnings("deprecation")
 	private void initializeForPollResponse(String timesJsonString) {
 
-		//TODO: Initialize for response
-		MeetingPollInfo mpi = getMeetingPollInfo(timesJsonString);
-		String jo = mpi.getDates().toString();
-		System.out.println(jo);
-		String [] datesArray = jo.split(",");
-		
-		for(String s : datesArray){
-			DateTimeFormat dtf = DateTimeFormat.getFormat("yyyy-MM-dd HH:mm:ss");
-			Date d = dtf.parse(s);
-			//TODO Populate the poll response table here. Dates are getting parsed successfully :)
-		}
 	}
 
 	public boolean contains(Date d){
@@ -110,10 +98,5 @@ public class CustomFlexTable extends FlexTable {
 				setWidget(rows, (2*i)+j+1, checkBox);
 			}
 		}
-	}	
-	
-	private final native MeetingPollInfo getMeetingPollInfo(String json)/*-{
-		return eval("(" + json + ")");
-	}-*/;
-	
+	}		
 }

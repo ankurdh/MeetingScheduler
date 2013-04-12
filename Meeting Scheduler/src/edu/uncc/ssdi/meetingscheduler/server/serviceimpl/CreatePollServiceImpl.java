@@ -69,7 +69,11 @@ public class CreatePollServiceImpl extends RemoteServiceServlet implements Creat
 			se.printStackTrace();
 			return -1;
 		} finally {
-			QueryHelper.setAutoCommit(true);
+			try{
+				QueryHelper.setAutoCommit(true);
+			} catch (SQLException se){
+				log.error("Failed to set autocommit to true.", se);
+			}
 		}
 		
 		return nextMplId;

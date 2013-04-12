@@ -15,7 +15,8 @@ public class CustomCheckBox extends SimpleCheckBox {
 	@SuppressWarnings("deprecation")
 	public CustomCheckBox(Date d) {
 		
-		dateTime = new Date(d.getYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes());
+		if(d != null)
+			dateTime = new Date(d.getYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes());
 
 		addStyleName("CheckBoxStyle");
 		

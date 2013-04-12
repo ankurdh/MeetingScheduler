@@ -174,7 +174,7 @@ public class LoginPanel implements Panel, QueryGenerator, JSONDataRequestor {
 
 			@Override
 			public void componentSelected(ButtonEvent ce) {
-				// TODO Auto-generated method stub
+				// TODO Auto-generated method stub -- Harsha's class will be invoked here. 
 				
 			}
 			

@@ -1,12 +1,13 @@
 package edu.uncc.ssdi.meetingscheduler.client.customwidgets;
 
+import com.google.gwt.user.client.ui.FlexTable;
+
 import edu.uncc.ssdi.meetingscheduler.shared.exceptions.ObjectUnInitializedException;
 
 public class CustomFlexTableHelper {
-	
+
 	@SuppressWarnings("deprecation")
-	public static String getTimesAndDatesAsJSON(CustomFlexTable timesTable) throws ObjectUnInitializedException {
-		
+	private static String evaluateGetFlexTableData(FlexTable timesTable) throws ObjectUnInitializedException{
 		StringBuffer jsonString = new StringBuffer();
 		boolean atleastOneElement = false;
 		jsonString.append("[\n");
@@ -37,8 +38,16 @@ public class CustomFlexTableHelper {
 		jsonString.setCharAt(jsonString.lastIndexOf(","), '\n');
 		jsonString.append("]");
 		
-		System.out.println(jsonString.toString());
 		return jsonString.toString();
+
+	}
+	
+	public static String getTimesAndDatesAsJSON(CustomFlexTable timesTable) throws ObjectUnInitializedException {
+		return evaluateGetFlexTableData(timesTable);
+	}
+	
+	public static String getResponsesAsJSONString(RespondToPollCustomFlexTable flexTable) throws ObjectUnInitializedException {
+		return evaluateGetFlexTableData(flexTable);
 	}
 
 }

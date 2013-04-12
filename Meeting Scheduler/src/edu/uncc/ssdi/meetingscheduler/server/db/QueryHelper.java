@@ -105,13 +105,14 @@ public class QueryHelper {
 	/**
 	 * @param Value that sets the AutoCommitt
 	 */
-	public static void setAutoCommit(boolean val){
+	public static void setAutoCommit(boolean val) throws SQLException {
 		try {
 			connection.setAutoCommit(val);
 		} catch (SQLException e) {
 			e.printStackTrace();
 			//TODO should not be ignored ideally!
 			//TODO throw the exception further down the chain.
+			throw e;
 		}
 	}
 
