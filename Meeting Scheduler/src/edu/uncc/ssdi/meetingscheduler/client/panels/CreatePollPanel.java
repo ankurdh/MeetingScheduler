@@ -35,6 +35,9 @@ public class CreatePollPanel implements Panel {
 	private TextField<String> locationTextField;
 	private TextField<Integer> durationTextField;
 	private TextArea descTextArea;
+	
+	private Integer pollId;
+	private Integer trackingPollId;
 
 	public CreatePollPanel(){
 		verticalPanel = new VerticalPanel();
@@ -82,9 +85,10 @@ public class CreatePollPanel implements Panel {
 
 						@Override
 						public void onSuccess(Integer result) {
-							if(result != -1){
-									MessageBox.info("Success!", "Poll created successfully with ID: " + result + 
-										"\n\nKindly email this number to participants to respond to poll.", null);
+							if(result != -1){ 
+									//MessageBox.info("Success!", "Poll created successfully with ID: " + result + "\n\nKindly email this number to participants to respond to poll.", null);
+									pollId = result;
+									getPollTrackingIdAndDisplayInfo();
 							}
 						}
 						
@@ -93,11 +97,39 @@ public class CreatePollPanel implements Panel {
 				} else {
 					//TODO: user is logged in. Invoke the logged in user method here. 
 				}
-								
 			}		
 		});
 				
 		return btn;
+	}
+	
+	private void getPollTrackingIdAndDisplayInfo() {
+		
+		//get the tracking id from ther server and show it to the poll starter!
+		createPollService.getPollTrackingId(pollId, new AsyncCallback<Integer>(){
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(Integer result) {
+				if(result != -1) {
+					trackingPollId = result;
+				
+					MessageBox.info("Poll Handles", "Poll created successfully. Poll Id: " + pollId +
+							".\nEmail this id & the below URL to participants for providing response.\nTracking Number: " + trackingPollId 
+							+ ", use this number to track responses and schedule meeting. " + 
+							"URL : http://127.0.0.1:8888/RespondToRequest.html?gwt.codesvr=127.0.0.1:9997", null);
+					
+				}
+				else
+					MessageBox.info("Error!", "Something failed in the server!", null);
+			}
+			
+		});	
 	}
 	
 	/**
@@ -203,6 +235,9 @@ public class CreatePollPanel implements Panel {
 
 	@Override
 	public void initialize() {
+		
+		pollId = -1;
+		trackingPollId = -1;
 		
 		dateTimeWidget = new DateTimeWidget();
 		

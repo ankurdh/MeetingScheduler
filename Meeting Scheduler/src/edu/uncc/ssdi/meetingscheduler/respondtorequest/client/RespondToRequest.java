@@ -40,7 +40,6 @@ public class RespondToRequest implements EntryPoint {
 
 			@Override
 			public void handleEvent(MessageBoxEvent be) {
-				System.out.println(be.getButtonClicked().getItemId());
 				if("ok".equalsIgnoreCase(be.getButtonClicked().getItemId()))
                 {
 					pollId = Integer.parseInt(be.getValue());
@@ -49,13 +48,17 @@ public class RespondToRequest implements EntryPoint {
 
 						@Override
 						public void onFailure(Throwable caught) {
-							MessageBox.info("Something went wrong!", "Server threw an error.", null);
+							MessageBox.info("Something went wrong!", "Server threw an error: " + caught.getMessage(), null);
 						}
 
 						@Override
 						public void onSuccess(String result) {
 							if(result != null){
-								RootPanel.get("respondPanel").add(new RespondPanel(result, pollId).getPanel());
+								
+								if(result.startsWith("TrackingInfo"))
+									MessageBox.info("Tracking Info Got from server", result, null); //TODO : invoke the tracking panel here.
+								else 
+									RootPanel.get("respondPanel").add(new RespondPanel(result, pollId).getPanel());
 							}
 							
 						}

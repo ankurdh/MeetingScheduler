@@ -81,6 +81,8 @@ public class MeetingSchedulingServiceImpl extends RemoteServiceServlet implement
 			}
 			log.debug("Inserted into meeting poll response times table successfully.");
 			
+			QueryHelper.makeCommit();
+			
 		} catch (SQLException se){
 			log.error("Failed to save poll response in the database", se);
 			return false;

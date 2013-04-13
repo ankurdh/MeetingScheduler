@@ -14,6 +14,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import edu.uncc.ssdi.meetingscheduler.client.customwidgets.RespondToPollCustomFlexTable;
@@ -196,8 +197,13 @@ public class RespondPanel implements Panel {
 
 							@Override
 							public void onSuccess(Boolean result) {
-								if(result)
+								if(result){
 									MessageBox.info("Success!", "Your availability has been saved!", null);
+									RootPanel.get("respondPanel").clear();
+								}
+								else{
+									MessageBox.alert("Error!", "Something went wrong!", null);
+								}
 							}
 						});
 			}
