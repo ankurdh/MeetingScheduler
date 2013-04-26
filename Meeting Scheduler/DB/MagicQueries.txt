@@ -1,0 +1,62 @@
+use test;
+
+select * from test.meeting;
+select * from meeting_poll;
+select * from test.meeting_poll_times;
+select * from test.meeting_poll_response;
+select * from test.meeting_poll_response_times;
+
+#get all the responses for mpl_id = 1
+select mpr_responder_name as "Participant Name", mpr_available as "Availability" 
+from test.meeting_poll_response 
+where mpl_id = 1 and mpr_available = true;
+
+#get the participant names and their available dates for a particular poll
+select mpr.mpr_responder_name as "Participant", mprt.mprt_date_time as "Available Dates"
+from test.meeting_poll_response mpr inner join test.meeting_poll_response_times mprt 
+on mprt.mpr_id = mpr.mpr_id 
+where mpr.mpl_id = 1 and mpr.mpr_available = true;
+
+#get the distinct participants who have responded for a poll
+select mpr.mpr_id, mpr.mpr_responder_name from test.meeting_poll_response mpr
+where mpr.mpr_responder_name in (select distinct(mpr.mpr_responder_name) from test.meeting_poll_response mpr
+where mpr.mpl_id = 6 and mpr.mpr_available = true) and mpr.mpl_id = 6 and mpr.mpr_available = true;
+
+#get the participant name and the number of slots they're available for.
+select mpr.mpr_responder_name as "Participant", count(mprt.mprt_date_time) as "Available Dates Count"
+from test.meeting_poll_response mpr inner join test.meeting_poll_response_times mprt 
+on mprt.mpr_id = mpr.mpr_id 
+where mpr.mpl_id = 7 and mpr.mpr_available = true
+group by mpr.mpr_responder_name
+order by count(mprt.mprt_date_time) desc;
+
+#get the date-time values in ascending order of number of participants.
+select mprt.mprt_date_time as "Poll Datetime", count(mpr.mpr_id) as "No. of available participants"
+from test.meeting_poll_response mpr inner join test.meeting_poll_response_times mprt
+on mprt.mpr_id = mpr.mpr_id 
+where mpr.mpr_available = true and mpr.mpl_id = 7
+group by mprt.mprt_date_time
+order by count(mpr.mpr_id) desc; 
+
+#get the participant name and the slots they're available for.
+select mpr.mpr_available as "Available", mpr.mpr_responder_name as "Participant", 
+	mprt.mprt_date_time as "Available Dates Count",	mpr.mpr_comments as "Comments" 
+from test.meeting_poll_response mpr inner join test.meeting_poll_response_times mprt 
+on mprt.mpr_id = mpr.mpr_id 
+where mpr.mpl_id = 1;
+
+#get the details of everyone who've responded for a poll
+select mpr.mpr_id, mpr.mpr_responder_name from test.meeting_poll_response mpr
+where mpr.mpr_responder_name in (select distinct(mpr.mpr_responder_name) from test.meeting_poll_response mpr
+where mpr.mpl_id = 6) and mpr.mpl_id = 6;
+
+#given a poll_id and a participant id, find out his response details
+select mpr.mpr_available, mpr.mpr_responder_name, mpr.mpr_comments 
+from test.meeting_poll_response mpr
+where mpr.mpr_id = 9 and mpr.mpl_id = 6;
+
+#given a poll_id and a participant id, find out his response time details
+select mprt.mprt_date_time 
+from test.meeting_poll_response_times mprt inner join test.meeting_poll_response mpr
+on mprt.mpr_id = mpr.mpr_id
+where mpr.mpl_id = 6 and mpr.mpr_id = 9;

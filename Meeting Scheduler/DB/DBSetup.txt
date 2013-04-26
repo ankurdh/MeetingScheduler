@@ -1,0 +1,86 @@
+create table test.meeting_poll (
+	mpl_id integer,
+	usr_id integer,
+	poll_created_dttm datetime,
+	poll_end_dttm datetime,
+	mpl_tracking_id integer,
+	mpl_scheduled_by varchar(40),
+	mpl_location varchar(40)
+);
+
+alter table test.meeting_poll add constraint unique_constr UNIQUE (mpl_id);
+
+create table test.meeting_poll_times (
+	mpt_id integer, 
+	mpl_id integer,
+	mpt_date_time datetime
+);
+
+alter table test.meeting_poll_times 
+add constraint foreign_key Foreign key(mpl_id) references test.meeting_poll(mpl_id);
+
+create table test.meeting (
+	mtg_id integer, 
+	mpl_id integer, 
+	mtg_subject varchar(255),
+	mtg_duration integer,
+	mtg_desc varchar(255),
+	mtg_scheduled bool
+);
+alter table test.meeting
+add constraint foreign_key foreign key(mpl_id) references test.meeting_poll(mpl_id);
+
+alter table test.meeting
+add constraint unique_constr Unique(mtg_id);
+
+create table test.meeting_poll_response (
+	mpr_id integer,
+	mpl_id integer,
+	mpr_responder_name varchar(45),
+	mpr_comments varchar(255),
+	mpr_available bool
+);
+
+alter table test.meeting_poll_response
+add constraint unique_constr Unique(mpr_id);
+
+alter table test.meeting_poll_response 
+add constraint foreign_key foreign key(mpl_id) references test.meeting_poll(mpl_id);
+
+create table test.meeting_poll_response_times (
+	mprt_id integer,
+	mpr_id integer,
+	mprt_date_time datetime
+);
+
+alter table test.meeting_poll_response_times
+add constraint unique_constr unique(mprt_id);
+
+alter table test.meeting_poll_response_times
+add constraint foreign_key foreign key(mpr_id) references test.meeting_poll_response(mpr_id);
+
+create table test.user_tbl (
+	usr_id integer,
+	usr_name varchar(40),
+	usr_google_email varchar(40)
+);
+
+alter table test.user_tbl
+add constraint unique_const unique(usr_id);
+
+create table test.meeting_poll_invitees (
+	mpi_id integer,
+	usr_id integer, 
+	mpl_id integer, 
+	mpi_invitee_name varchar(40),
+	mpi_invitee_mailid	varchar(40)
+);
+
+alter table test.meeting_poll_invitees 
+add constraint unique_constr unique(mpi_id);
+
+alter table test.meeting_poll_invitees
+add constraint foreign_key foreign key(mpl_id) references test.meeting_poll(mpl_id);
+
+alter table test.meeting_poll_invitees
+add constraint foreign_key_2 foreign key(usr_id) references test.user_tbl(usr_id);
