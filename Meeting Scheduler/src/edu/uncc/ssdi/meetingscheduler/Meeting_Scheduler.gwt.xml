@@ -19,11 +19,15 @@
 
   <!-- Other module inherits                                      -->
   <inherits name='com.extjs.gxt.ui.GXT' />
-
-  <!-- Specify the app entry point class.                         -->
+  <inherits name="com.google.gwt.user.User"/> 
+  
+  <inherits name="com.google.gwt.user.theme.clean.Clean"/> 
+  <inherits name="com.google.api.gwt.oauth2.OAuth2"/>
+ 
+  <add-linker name="xs"/> 
+  <add-linker name="xsiframe"/>
   <entry-point class='edu.uncc.ssdi.meetingscheduler.client.Meeting_Scheduler'/>
 
-  <!-- Specify the paths for translatable code                    -->
   <source path='client'/>
   <source path='shared'/>
 

@@ -1,6 +1,8 @@
 package edu.uncc.ssdi.meetingscheduler.client.panels;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.ComponentEvent;
+import com.extjs.gxt.ui.client.event.KeyListener;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.Label;
 import com.extjs.gxt.ui.client.widget.MessageBox;
@@ -8,9 +10,12 @@ import com.extjs.gxt.ui.client.widget.button.Button;
 import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import edu.uncc.ssdi.meetingscheduler.client.customwidgets.CustomFlexTableHelper;
@@ -24,6 +29,11 @@ public class CreatePollPanel implements Panel {
 	
 	//get a handle on the Create Poll service.
 	CreatePollServiceAsync createPollService = GWT.create(CreatePollService.class);
+	
+	private HorizontalPanel metadataAndEmailIdPanel;
+	private VerticalPanel emailIdPanel;
+	private ScrollPanel emailIdScrollPanel;
+	private FlexTable emailIdFlexTable;
 	
 	private VerticalPanel verticalPanel;
 	private HorizontalPanel hp1;
@@ -86,7 +96,6 @@ public class CreatePollPanel implements Panel {
 						@Override
 						public void onSuccess(Integer result) {
 							if(result != -1){ 
-									//MessageBox.info("Success!", "Poll created successfully with ID: " + result + "\n\nKindly email this number to participants to respond to poll.", null);
 									pollId = result;
 									getPollTrackingIdAndDisplayInfo();
 							}
@@ -240,17 +249,79 @@ public class CreatePollPanel implements Panel {
 		trackingPollId = -1;
 		
 		dateTimeWidget = new DateTimeWidget();
+		metadataAndEmailIdPanel = new HorizontalPanel();
 		
 		hp1 = getMeetingMetadataPanel();
 		hp2 = new HorizontalPanel();
 		hp2.add(dateTimeWidget.getDateTimeWidget());
 		
+		metadataAndEmailIdPanel.add(hp1);
+		
+		if(UserLoginState.userLoggedIn){
+			populateEmailPanel();
+			metadataAndEmailIdPanel.add(emailIdPanel);
+			emailIdPanel.add(emailIdScrollPanel);
+			emailIdScrollPanel.add(emailIdFlexTable);
+			metadataAndEmailIdPanel.setSpacing(10);
+			
+		}
+		
 		Button createPollButton = getCreatePollButton();
 				
-		verticalPanel.add(hp1);
+		verticalPanel.add(metadataAndEmailIdPanel);
 		verticalPanel.add(hp2);
 		verticalPanel.add(createPollButton);
 
+	}
+
+	private void populateEmailPanel() {
+		
+		emailIdPanel = new VerticalPanel();
+		emailIdPanel.setBorderWidth(1);		
+		
+		emailIdScrollPanel = new ScrollPanel();
+		emailIdScrollPanel.setAlwaysShowScrollBars(true);
+		emailIdScrollPanel.setHeight("154px");
+		emailIdScrollPanel.setWidth("420px");
+		emailIdFlexTable = new FlexTable();
+		
+		emailIdFlexTable.setWidget(0, 0, new Label("Name"));
+		emailIdFlexTable.getCellFormatter().setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_CENTER);
+		emailIdFlexTable.setWidget(0, 1, new Label("Email ID"));
+		emailIdFlexTable.getCellFormatter().setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_CENTER);
+		
+		addRowToEmailIdFlexTable();
+		
+	}
+	
+	private void addRowToEmailIdFlexTable(){
+		
+		int rows = emailIdFlexTable.getRowCount();
+		
+		TextField<String> nameTextField = new TextField<String>();
+		TextField<String> emailIdTextField = new TextField<String>();
+		
+		nameTextField.setShim(true);
+		nameTextField.setSize("100%", "100%");
+		emailIdTextField.setShim(true);
+		emailIdTextField.setSize("100%", "100%");
+		
+		emailIdTextField.addKeyListener(new KeyListener(){
+			@Override
+			public void componentKeyPress(ComponentEvent event) {
+				super.componentKeyPress(event);
+				
+				if(event.getKeyCode() == KeyCodes.KEY_ENTER)
+					addRowToEmailIdFlexTable();
+			}
+		});
+		
+		emailIdFlexTable.setWidget(rows, 0, nameTextField);
+		emailIdFlexTable.getCellFormatter().setHorizontalAlignment(rows, 0, HasHorizontalAlignment.ALIGN_CENTER);
+		emailIdFlexTable.setWidget(rows, 1, emailIdTextField);
+		emailIdFlexTable.getCellFormatter().setHorizontalAlignment(rows, 1, HasHorizontalAlignment.ALIGN_CENTER);
+		
+		nameTextField.getElement().focus();
 	}
 
 	@Override

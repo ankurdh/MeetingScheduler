@@ -2,15 +2,15 @@ package edu.uncc.ssdi.meetingscheduler.client.panels;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
-import com.extjs.gxt.ui.client.widget.Label;
 import com.extjs.gxt.ui.client.widget.button.Button;
-import com.extjs.gxt.ui.client.widget.form.TextField;
+import com.google.api.gwt.oauth2.client.Auth;
+import com.google.api.gwt.oauth2.client.AuthRequest;
+import com.google.api.gwt.oauth2.client.Callback;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import edu.uncc.ssdi.meetingscheduler.client.JSONDataRequestor;
@@ -24,14 +24,16 @@ import edu.uncc.ssdi.meetingscheduler.client.state.UserLoginState;
 
 public class LoginPanel implements Panel, QueryGenerator, JSONDataRequestor {
 	
+	//Google sign in constants. 
+	private static final Auth AUTH = Auth.get();
+	private static final String GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/auth";
+    private static final String GOOGLE_CLIENT_ID = "1067405885626-2bk3p3u8gu0t50kamr1k5nehp6dk29p1.apps.googleusercontent.com";
+	private static final String PLUS_ME_SCOPE = "https://www.googleapis.com/auth/plus.me";
+	
 	//create a handle to the LoginServiceAsync RMI class.
 	private final LoginServiceAsync loginService = GWT.create(LoginService.class);
 	
-	private FlexTable table;
 	private Grid g;
-	private TextField<String> usernameTextField;
-	private TextField<String> passwordTextField;
-	private Button submitButton;
 	private Button noLoginButton;
 	private Button registerWithGoogleButton;
 	
@@ -46,63 +48,6 @@ public class LoginPanel implements Panel, QueryGenerator, JSONDataRequestor {
 	@Override
 	public void update() {
 
-	}
-	
-	private Button getSubmitButton(){
-		
-		Button submitButton = new Button("Login", new SelectionListener<ButtonEvent>(){
-
-			@Override
-			public void componentSelected(ButtonEvent ce) {
-				loginService.verifyRegisteredUser("a", "a", new AsyncCallback<Boolean>() {
-					
-					@Override
-					public void onSuccess(Boolean result) {
-						
-						final DialogBox d = new DialogBox();
-						final VerticalPanel v = new VerticalPanel();
-						Button b = new Button("Close", new SelectionListener<ButtonEvent>(){
-
-							@Override
-							public void componentSelected(ButtonEvent ce) {
-								d.hide();
-							}
-							
-						});
-						
-						if (result){ 
-							
-							v.add(new Label("User Registered!"));
-							UserLoginState.setUserLoginState(true);
-							StateHelper.setState(State.LOGGED_IN);
-							
-						}
-						else v.add(new Label("User Not Registered"));
-						
-						v.add(b);
-						
-						d.setWidget(v);
-						d.setText("Registration Notification: ");
-						d.setAnimationEnabled(true);
-						d.center();
-						d.show();
-
-					}
-					
-					@Override
-					public void onFailure(Throwable caught) {
-						// TODO Auto-generated method stub
-						
-					}
-				});
-			}
-			
-		});		
-		
-		submitButton.setAutoWidth(true);
-		submitButton.setAutoHeight(true);
-		return submitButton;
-		
 	}
 	
 	private Button getNonLoginButton(){
@@ -125,46 +70,20 @@ public class LoginPanel implements Panel, QueryGenerator, JSONDataRequestor {
 	@Override
 	public void initialize() {
 		
-		table = new FlexTable();
-		
 		g = new Grid(3, 3);
 		g.setCellSpacing(10);
 		
-		usernameTextField = new TextField<String>();
-		usernameTextField.setAutoWidth(true);
-		usernameTextField.setAllowBlank(false);
-
-		passwordTextField = new TextField<String>();
-		passwordTextField.setPassword(true);
-		passwordTextField.setAllowBlank(false);
-		
-		submitButton = getSubmitButton();
 		noLoginButton = getNonLoginButton();
 		registerWithGoogleButton = getRegisterWithGoogleButton();		
 		
-		table.setCellPadding(10);
-		
-		Label userName = new Label("UserName:");
-		Label password = new Label("Password:");
-		
-		g.setWidget(0, 0, userName);
-		g.getCellFormatter().setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_CENTER);
-		g.setWidget(0,1,usernameTextField);
-		g.getCellFormatter().setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_CENTER);
-		g.setWidget(1,0, password);
-		g.getCellFormatter().setHorizontalAlignment(1, 0, HasHorizontalAlignment.ALIGN_CENTER);
-		g.setWidget(1,1,passwordTextField);
-		g.getCellFormatter().setHorizontalAlignment(1, 1, HasHorizontalAlignment.ALIGN_CENTER);
-		g.setWidget(2,0, registerWithGoogleButton);
+		g.setWidget(0,0, registerWithGoogleButton);
 		g.getCellFormatter().setHorizontalAlignment(2, 0, HasHorizontalAlignment.ALIGN_CENTER);
-		g.setWidget(2,1, noLoginButton);
+		g.setWidget(0,1, noLoginButton);
 		g.getCellFormatter().setHorizontalAlignment(2, 1, HasHorizontalAlignment.ALIGN_CENTER);
-		g.setWidget(1, 2, submitButton);
-		g.getCellFormatter().setHorizontalAlignment(1, 2, HasHorizontalAlignment.ALIGN_CENTER);
 		
 		panel.add(g);
+		panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		panel.setBorderWidth(3);
-		panel.setSpacing(5);
 		panel.setStyleName("loginVerticalPanel");
 				
 	}
@@ -172,14 +91,34 @@ public class LoginPanel implements Panel, QueryGenerator, JSONDataRequestor {
 	private Button getRegisterWithGoogleButton() {
 		Button btn = new Button("Login with Google Account", new SelectionListener<ButtonEvent>(){
 
+			@SuppressWarnings("deprecation")
 			@Override
 			public void componentSelected(ButtonEvent ce) {
 				// TODO Auto-generated method stub -- Harsha's class will be invoked here. 
+				AUTH.clearAllTokens();
 				
+				final AuthRequest req = new AuthRequest(GOOGLE_AUTH_URL, GOOGLE_CLIENT_ID)
+	            .withScopes(PLUS_ME_SCOPE);
+				
+				AUTH.login(req, new Callback<String, Throwable>() {
+			          @Override
+			          public void onSuccess(String token) {
+			            Window.alert("Got an OAuth token:\n" + token + "\n"
+			                + "Token expires in " + AUTH.expiresIn(req) + " ms\n");
+			          }
+
+			          @Override
+			          public void onFailure(Throwable caught) {
+			            Window.alert("Error:\n" + caught.getMessage());
+			          }
+			        });
+				
+				Auth.export();
 			}
 			
 		});
 		
+		btn.setShim(true);
 		btn.setAutoWidth(true);
 		btn.setAutoHeight(true);
 		return btn;
