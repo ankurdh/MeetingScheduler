@@ -14,6 +14,9 @@ public class PanelHelper {
 		case State.START_POLL:
 			return new CreatePollPanel().getPanel();
 			
+		case State.LOGGED_IN:
+			throw new IllegalArgumentException("Unknown or Unimplemented State: " + StateHelper.getState());
+			
 		default:
 			throw new IllegalArgumentException("Unknown or Unimplemented State: " + StateHelper.getState());
 		}	

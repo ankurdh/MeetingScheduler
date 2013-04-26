@@ -12,10 +12,12 @@ import org.apache.commons.logging.LogFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import edu.uncc.ssdi.meetingscheduler.client.services.CreatePollService;
 import edu.uncc.ssdi.meetingscheduler.server.db.QueryHelper;
+import edu.uncc.ssdi.meetingscheduler.server.jsonclasses.NameEmailIdJSONClass;
 import edu.uncc.ssdi.meetingscheduler.server.jsonclasses.PollCreationDateTimeJSONClass;
 import edu.uncc.ssdi.meetingscheduler.server.jsonclasses.PollCreationMetadataJSONClass;
 
@@ -31,12 +33,6 @@ public class CreatePollServiceImpl extends RemoteServiceServlet implements Creat
 		
 		PollCreationMetadataJSONClass pcmjc = new Gson().fromJson(metaDataJSONString, PollCreationMetadataJSONClass.class);
 		JsonArray pollDateTimeArray = new JsonParser().parse(dateTimeJSONString).getAsJsonArray();
-		
-		log.debug(pcmjc.getDuration());
-		for(int i = 0; i < pollDateTimeArray.size() ; i ++){
-			PollCreationDateTimeJSONClass jo = new Gson().fromJson(pollDateTimeArray.get(i), PollCreationDateTimeJSONClass.class);
-			log.debug(jo.getDateTime());
-		}
 
 		int nextMplId = QueryHelper.getNextIndex("select max(mpl_id) from test.meeting_poll");
 		int nextPollDateTimeId = QueryHelper.getNextIndex("select max(mpt_id) from test.meeting_poll_times");
@@ -257,9 +253,35 @@ public class CreatePollServiceImpl extends RemoteServiceServlet implements Creat
 	}
 
 	@Override
-	public int setPollDetails(String metaDataJSONString, String dateTimeJSONString, String participantsJSONString) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int setPollDetails(String metaDataJSONString, String dateTimeJSONString, String participantsJSONString, Integer userId) {
+		int pollId = setPollDetails(metaDataJSONString, dateTimeJSONString);
+		int nextInviteeId = QueryHelper.getNextIndex("select max(mpi_id) from test.meeting_poll_invitees");
+		
+		JsonArray nameEmailIdJSONArray = new JsonParser().parse(participantsJSONString).getAsJsonArray();
+		
+		try {
+			QueryHelper.setAutoCommit(false);
+			
+			for(int i = 0 ; i < nameEmailIdJSONArray.size(); i++){
+				NameEmailIdJSONClass neijc = new Gson().fromJson(nameEmailIdJSONArray.get(i), NameEmailIdJSONClass.class);
+				
+				String query = "insert into test.meeting_poll_invitees values (" + nextInviteeId++ +
+						"," + userId + "," + pollId + ",'" + neijc.getName() + "','" + neijc.getEmailId() + "')";
+				
+				QueryHelper.fireInsert(query);
+			}
+			
+			QueryHelper.makeCommit();
+			QueryHelper.setAutoCommit(true);
+		} catch (JsonSyntaxException e) {
+			e.printStackTrace();
+			return -1;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return -1;
+		}
+		
+		return pollId;
 	}
 
 	@Override

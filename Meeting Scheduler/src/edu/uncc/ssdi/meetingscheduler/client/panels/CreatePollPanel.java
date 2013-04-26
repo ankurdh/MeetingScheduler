@@ -104,12 +104,74 @@ public class CreatePollPanel implements Panel {
 					});
 
 				} else {
-					//TODO: user is logged in. Invoke the logged in user method here. 
+					//TODO: user is logged in. Invoke the logged in user method here.
+					String participantNameEmailIdJSON = null;
+					try {
+						participantNameEmailIdJSON = getUserNameEmailIdJSONString();
+					} catch(ObjectUnInitializedException e){
+						MessageBox.info("Error!", e.getMessage(), null);
+						return;
+					}
+					
+					createPollService.setPollDetails(pollDetailsJSONString, dateTimeJSONString, 
+							participantNameEmailIdJSON, UserLoginState.getLoggedInUserId(), new AsyncCallback<Integer>() {
+
+								@Override
+								public void onFailure(Throwable caught) {
+									// TODO Auto-generated method stub
+									
+								}
+
+								@Override
+								public void onSuccess(Integer result) {
+									if(result != -1){ 
+										pollId = result;
+										getPollTrackingIdAndDisplayInfo();
+									}
+									
+									//TODO: pass the participantNameEmailIdJSON object to the EmailHelper here. 
+									//or, should it be implemented at the server?
+									
+								}
+					});
+					
 				}
 			}		
 		});
 				
 		return btn;
+	}
+	
+	/**
+	 * This method is called only if a user is logged in and he has entered the poll participant names
+	 * and their email ids. 
+	 * @author Ankur
+	 */
+	private String getUserNameEmailIdJSONString() throws ObjectUnInitializedException {
+		int rows = emailIdFlexTable.getRowCount();
+		
+		if(rows == 0)
+			throw new ObjectUnInitializedException("Please enter atleast one participant");
+		
+		StringBuffer jsonString = new StringBuffer();
+		
+		jsonString.append("[\n");
+		
+		for(int i = 1 ; i < rows ; i ++){
+			TextField<String> name = (TextField<String>)emailIdFlexTable.getWidget(i, 0);
+			TextField<String> emailId = (TextField<String>)emailIdFlexTable.getWidget(i, 1);
+			
+			if(name.getValue().length() == 0)
+				continue;
+			if(emailId.getValue().length() == 0)
+				continue;
+			
+			jsonString.append("{\n").append("\"name\":").append("\"" + name.getValue() + "\",\n")
+					  .append("\"email\":").append("\"" + emailId.getValue() + "\"\n},\n");
+		}
+		
+		jsonString.setCharAt(jsonString.lastIndexOf(","), ']');
+		return jsonString.append("\n").toString();
 	}
 	
 	private void getPollTrackingIdAndDisplayInfo() {
@@ -283,12 +345,14 @@ public class CreatePollPanel implements Panel {
 		emailIdScrollPanel.setAlwaysShowScrollBars(true);
 		emailIdScrollPanel.setHeight("154px");
 		emailIdScrollPanel.setWidth("420px");
-		emailIdFlexTable = new FlexTable();
 		
+		emailIdFlexTable = new FlexTable();
 		emailIdFlexTable.setWidget(0, 0, new Label("Name"));
 		emailIdFlexTable.getCellFormatter().setHorizontalAlignment(0, 0, HasHorizontalAlignment.ALIGN_CENTER);
 		emailIdFlexTable.setWidget(0, 1, new Label("Email ID"));
 		emailIdFlexTable.getCellFormatter().setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_CENTER);
+		emailIdFlexTable.getElement().getStyle().setProperty("margin", "0 auto");
+		emailIdFlexTable.setSize("100%", "100%");
 		
 		addRowToEmailIdFlexTable();
 		
@@ -301,10 +365,10 @@ public class CreatePollPanel implements Panel {
 		TextField<String> nameTextField = new TextField<String>();
 		TextField<String> emailIdTextField = new TextField<String>();
 		
+		nameTextField.focus();
+		
 		nameTextField.setShim(true);
-		nameTextField.setSize("100%", "100%");
 		emailIdTextField.setShim(true);
-		emailIdTextField.setSize("100%", "100%");
 		
 		emailIdTextField.addKeyListener(new KeyListener(){
 			@Override
@@ -321,7 +385,6 @@ public class CreatePollPanel implements Panel {
 		emailIdFlexTable.setWidget(rows, 1, emailIdTextField);
 		emailIdFlexTable.getCellFormatter().setHorizontalAlignment(rows, 1, HasHorizontalAlignment.ALIGN_CENTER);
 		
-		nameTextField.getElement().focus();
 	}
 
 	@Override

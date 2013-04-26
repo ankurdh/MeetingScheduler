@@ -9,6 +9,6 @@ public interface CreatePollService extends RemoteService {
 	String getPollDetails(Integer pollId);
 	Integer setPollDetails(String metaDataJSONString, String dateTimeJSONString);
 	Integer getPollTrackingId(Integer pollId);
-	int setPollDetails(String metaDataJSONString, String dateTimeJSONString, String participantsJSONString);
+	int setPollDetails(String metaDataJSONString, String dateTimeJSONString, String participantsJSONString, Integer userId);
 
 }

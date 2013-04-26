@@ -27,7 +27,7 @@ public class LoginPanel implements Panel, QueryGenerator, JSONDataRequestor {
 	//Google sign in constants. 
 	private static final Auth AUTH = Auth.get();
 	private static final String GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/auth";
-    private static final String GOOGLE_CLIENT_ID = "1067405885626-2bk3p3u8gu0t50kamr1k5nehp6dk29p1.apps.googleusercontent.com";
+    private static final String GOOGLE_CLIENT_ID = "105486619671.apps.googleusercontent.com";//"1067405885626-2bk3p3u8gu0t50kamr1k5nehp6dk29p1.apps.googleusercontent.com";
 	private static final String PLUS_ME_SCOPE = "https://www.googleapis.com/auth/plus.me";
 	
 	//create a handle to the LoginServiceAsync RMI class.
@@ -56,7 +56,7 @@ public class LoginPanel implements Panel, QueryGenerator, JSONDataRequestor {
 			@Override
 			public void componentSelected(ButtonEvent ce) {
 				StateHelper.setState(State.START_POLL);
-				UserLoginState.setUserLoginState(false);
+				UserLoginState.setUserLoginState(true);
 			}
 			
 		});
@@ -94,11 +94,8 @@ public class LoginPanel implements Panel, QueryGenerator, JSONDataRequestor {
 			@SuppressWarnings("deprecation")
 			@Override
 			public void componentSelected(ButtonEvent ce) {
-				// TODO Auto-generated method stub -- Harsha's class will be invoked here. 
-				AUTH.clearAllTokens();
-				
-				final AuthRequest req = new AuthRequest(GOOGLE_AUTH_URL, GOOGLE_CLIENT_ID)
-	            .withScopes(PLUS_ME_SCOPE);
+				/*AUTH.clearAllTokens();
+				final AuthRequest req = new AuthRequest(GOOGLE_AUTH_URL, GOOGLE_CLIENT_ID).withScopes(PLUS_ME_SCOPE);
 				
 				AUTH.login(req, new Callback<String, Throwable>() {
 			          @Override
@@ -114,6 +111,8 @@ public class LoginPanel implements Panel, QueryGenerator, JSONDataRequestor {
 			        });
 				
 				Auth.export();
+				*/
+//				StateHelper.setState(State.LOGGED_IN);
 			}
 			
 		});
