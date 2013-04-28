@@ -1,5 +1,6 @@
 package edu.uncc.ssdi.meetingscheduler.server.serviceimpl;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.apache.commons.logging.Log;
@@ -105,12 +106,60 @@ public class MeetingSchedulingServiceImpl extends RemoteServiceServlet implement
 	 * @see 
 	 */
 	@Override
-	public String scheduleMeetingAndGetBestMeetingTimes(int pollId) {
+	public String getAvailableParticipants(int pollId) {
+		
 		return null;
 	}
 
 	@Override
 	public boolean scheduleMeeting(int pollId, String scheduleDateTimeJSON) {
 		return false;
+	}
+
+	@Override
+	public String getUnavailableParticipants(int pollId) {
+		return null;
+	}
+
+	@Override
+	public String getBestScheduleTimes(int trackingPollId) {
+		
+		//first, get the poll id corresponding to the tracking poll id;
+		ResultSet rs = null; 
+		int pollId = -1;
+		
+		try {
+			rs = QueryHelper.getResultSet("select mpl_id from test.meeting_poll where mpl_tracking_id = " + trackingPollId);
+			
+			while(rs.next())
+				pollId = rs.getInt(1);
+			
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
+		if(pollId == -1)
+			return null;
+
+		StringBuffer bestTimesString = new StringBuffer();
+		String query = "select mprt.mprt_date_time, count(mpr.mpr_id)" + 
+				" from test.meeting_poll_response mpr inner join test.meeting_poll_response_times mprt " + 
+				"on mprt.mpr_id = mpr.mpr_id where mpr.mpr_available = true and mpr.mpl_id = " + pollId + 
+				" group by mprt.mprt_date_time order by count(mpr.mpr_id) desc";
+		
+		bestTimesString.append("[\n");
+		try {
+			rs = QueryHelper.getResultSet(query);
+			while(rs.next()){
+				bestTimesString.append("{\n").append("\"datetime\":").append("\"" + rs.getString(1) + "\",\n");
+				bestTimesString.append("\"count\":\"" + rs.getInt(2) + "\"\n},");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		bestTimesString.setCharAt(bestTimesString.lastIndexOf(","), ']');
+		
+		return bestTimesString.toString();
 	}
 }

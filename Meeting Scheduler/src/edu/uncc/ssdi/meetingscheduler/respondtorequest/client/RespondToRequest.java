@@ -22,6 +22,7 @@ import com.google.gwt.core.shared.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 
+import edu.uncc.ssdi.meetingscheduler.client.panels.TrackResponsesPanel;
 import edu.uncc.ssdi.meetingscheduler.client.services.CreatePollService;
 import edu.uncc.ssdi.meetingscheduler.client.services.CreatePollServiceAsync;
 
@@ -56,7 +57,7 @@ public class RespondToRequest implements EntryPoint {
 							if(result != null){
 								
 								if(result.startsWith("TrackingInfo"))
-									MessageBox.info("Tracking Info Got from server", result, null); //TODO : invoke the tracking panel here.
+									RootPanel.get("respondPanel").add(new TrackResponsesPanel(result, pollId).getPanel());
 								else 
 									RootPanel.get("respondPanel").add(new RespondPanel(result, pollId).getPanel());
 							}

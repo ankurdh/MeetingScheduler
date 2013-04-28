@@ -356,7 +356,7 @@ public class CreatePollPanel implements Panel {
 		
 		addRowToEmailIdFlexTable();
 		
-	}
+}
 	
 	private void addRowToEmailIdFlexTable(){
 		
