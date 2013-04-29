@@ -110,8 +110,6 @@ public class QueryHelper {
 			connection.setAutoCommit(val);
 		} catch (SQLException e) {
 			e.printStackTrace();
-			//TODO should not be ignored ideally!
-			//TODO throw the exception further down the chain.
 			throw e;
 		}
 	}
@@ -127,6 +125,10 @@ public class QueryHelper {
 			e.printStackTrace();
 			throw e;
 		}
+	}
+	
+	public static void fireUpdate(String query) throws SQLException {
+		s.executeUpdate(query);
 	}
 
 	public static void closeStatement() throws SQLException {

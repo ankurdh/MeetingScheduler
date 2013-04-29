@@ -2,6 +2,10 @@ package edu.uncc.ssdi.meetingscheduler.server.serviceimpl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -106,53 +110,147 @@ public class MeetingSchedulingServiceImpl extends RemoteServiceServlet implement
 	 * @see 
 	 */
 	@Override
-	public String getAvailableParticipants(int pollId) {
-		
-		return null;
-	}
-
-	@Override
-	public boolean scheduleMeeting(int pollId, String scheduleDateTimeJSON) {
-		return false;
-	}
-
-	@Override
-	public String getUnavailableParticipants(int pollId) {
-		return null;
-	}
-
-	@Override
-	public String getBestScheduleTimes(int trackingPollId) {
-		
-		//first, get the poll id corresponding to the tracking poll id;
-		ResultSet rs = null; 
-		int pollId = -1;
+	public String getAvailableParticipantsNameComments(int trackingPollId) {
+		Integer pollId = getPollIdFromTrackingPollId(trackingPollId);
+		StringBuffer jsonString = new StringBuffer();
+		String query = "select mpr.mpr_responder_name, mpr.mpr_comments from test.meeting_poll_response mpr " +
+				" where mpr.mpl_id = " + pollId + " and mpr.mpr_available = TRUE";
+		ResultSet rs = null;
+		boolean valueExist = false;
 		
 		try {
-			rs = QueryHelper.getResultSet("select mpl_id from test.meeting_poll where mpl_tracking_id = " + trackingPollId);
+			rs = QueryHelper.getResultSet(query);
+			jsonString.append("[\n");
 			
-			while(rs.next())
+			while(rs.next()){
+				valueExist = true;
+				jsonString.append("{\n").append("\"name\":\"" + rs.getString(1) + "\",\n\"comments\":\"" + rs.getString(2) + "\"\n},");
+			}
+			
+			if(valueExist)
+				jsonString.setCharAt(jsonString.lastIndexOf(","), ']');
+			else 
+				return null;
+			
+			return jsonString.toString();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
+
+	@Override
+	public boolean scheduleMeeting(int trackingPollId, String scheduleDateTime) {
+		Integer pollId = getPollIdFromTrackingPollId(trackingPollId);
+		String query = "update test.meeting set mtg_scheduled = TRUE where mpl_id = " + pollId;
+		
+		try {
+			QueryHelper.fireUpdate(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		
+		//TODO sync the scheduled datetime with the users calendar here.
+		
+		//TODO call the email helper here to send out emails for the available participants. 
+		
+		return true;
+	}
+
+	@Override
+	public String getUnavailableParticipants(int trackingPollId) {
+		Integer pollId = getPollIdFromTrackingPollId(trackingPollId);
+		String query = "select mpr.mpr_responder_name, mpr.mpr_comments from test.meeting_poll_response mpr " +
+						" where mpr.mpr_responder_name in (select distinct(mpr.mpr_responder_name) from test.meeting_poll_response mpr " + 
+						" where mpr.mpl_id = " + pollId + " and mpr.mpr_available = FALSE) and mpr.mpl_id = " + pollId;
+		StringBuffer jsonString = new StringBuffer();
+		
+		ResultSet rs = null;
+		Boolean valueExist = false;
+		
+		try {
+			rs = QueryHelper.getResultSet(query);
+			jsonString.append("[\n");
+			
+			while(rs.next()){
+				valueExist = true;
+				jsonString.append("{\n").append("\"name\":\"" + rs.getString(1) + "\",\n\"comments\":\"" + rs.getString(2) + "\"\n},");
+			}
+			
+			if(valueExist)
+				jsonString.setCharAt(jsonString.lastIndexOf(","), ']');
+			else 
+				return null;
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		return jsonString.toString();
+	}
+
+	private Integer getPollIdFromTrackingPollId(int trackingPollId){
+		ResultSet rs = null; 
+		int pollId = -1;
+		String query = "select mpl_id from test.meeting_poll where mpl_tracking_id = " + trackingPollId;
+		try {
+			rs = QueryHelper.getResultSet(query);
+			
+			while(rs.next()){
+				log.debug("Requested poll ID : " + rs.getInt(1));
 				pollId = rs.getInt(1);
+			}
+			
+			return pollId;
 			
 		} catch (SQLException e1) {
 			e1.printStackTrace();
+		} catch (NullPointerException e2){
+			//that's okay!
+		} finally {
+			try {
+				rs.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		if(pollId == -1)
 			return null;
 
+		return null;
+	}
+	
+	@Override
+	public String getBestScheduleTimes(int trackingPollId) {
+		ResultSet rs = null;
+		int pollId = getPollIdFromTrackingPollId(trackingPollId);
 		StringBuffer bestTimesString = new StringBuffer();
-		String query = "select mprt.mprt_date_time, count(mpr.mpr_id)" + 
+		String query = "select DATE(mprt.mprt_date_time) as date, HOUR(mprt.mprt_date_time) as hour, MINUTE(mprt.mprt_date_time) as min, count(mpr.mpr_id)" + 
 				" from test.meeting_poll_response mpr inner join test.meeting_poll_response_times mprt " + 
-				"on mprt.mpr_id = mpr.mpr_id where mpr.mpr_available = true and mpr.mpl_id = " + pollId + 
+				" on mprt.mpr_id = mpr.mpr_id where mpr.mpr_available = true and mpr.mpl_id = " + pollId + 
 				" group by mprt.mprt_date_time order by count(mpr.mpr_id) desc";
 		
 		bestTimesString.append("[\n");
 		try {
 			rs = QueryHelper.getResultSet(query);
 			while(rs.next()){
-				bestTimesString.append("{\n").append("\"datetime\":").append("\"" + rs.getString(1) + "\",\n");
-				bestTimesString.append("\"count\":\"" + rs.getInt(2) + "\"\n},");
+				java.sql.Date date = rs.getDate("date");
+				String hour = rs.getString("hour");
+				String min = rs.getString("min");
+				
+				if(hour.length() == 1)
+					hour = "0"+hour;
+				
+				if(min.length() == 1)
+					min = "0"+min;
+				
+				bestTimesString.append("{\n").append("\"datetime\":").append("\"" + date.toString() + " " + hour + ":" + min + ":00" + "\",\n");
+				bestTimesString.append("\"count\":\"" + rs.getInt(4) + "\"\n},");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -161,5 +259,66 @@ public class MeetingSchedulingServiceImpl extends RemoteServiceServlet implement
 		bestTimesString.setCharAt(bestTimesString.lastIndexOf(","), ']');
 		
 		return bestTimesString.toString();
+	}
+
+	@Override
+	public String getDateTimeParticipants(Integer trackingPollId) {
+		StringBuffer jsonString = new StringBuffer();
+		Integer pollId = getPollIdFromTrackingPollId(trackingPollId);		
+		String query = "select mprt.mprt_date_time, mpr.mpr_responder_name " + 
+				" from test.meeting_poll_response mpr inner join test.meeting_poll_response_times mprt " + 
+				" on mprt.mpr_id = mpr.mpr_id where mpr.mpl_id = " + pollId + " and mpr.mpr_available = TRUE" +
+				" order by mprt.mprt_date_time";
+		ResultSet rs = null;
+		boolean rowExist = false;
+		
+		try {
+			rs = QueryHelper.getResultSet(query);
+			jsonString.append("[\n");
+			while(rs.next()){
+				rowExist = true;
+				jsonString.append("{\n\"datetime\":\"" + rs.getString(1) + "\",\n\"name\":\"" + rs.getString(2) + "\"\n},");
+				
+			}
+			
+			if(rowExist)
+				jsonString.setCharAt(jsonString.lastIndexOf(","), ']');
+			
+			return jsonString.toString();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public String getAvailableParticipantsFor(int trackingPollId, String dateTime) {
+		StringBuffer str = new StringBuffer();
+		int pollId = getPollIdFromTrackingPollId(trackingPollId);
+		String query = "select distinct(mpr.mpr_responder_name), mpr.mpr_comments " + 
+				" from test.meeting_poll_response mpr, test.meeting_poll_times mpt , test.meeting_poll_response_times mprt " + 
+				" where mpt.mpl_id = mpr.mpl_id and mpr.mpr_id = mprt.mpr_id " +
+				" and mpr.mpl_id = " + pollId + " and mpr.mpr_available = TRUE and mprt.mprt_date_time = '" + dateTime + "'";
+		
+		ResultSet rs = null;
+		
+		try {
+			rs = QueryHelper.getResultSet(query);
+			boolean exists = false;
+			while(rs.next()){
+				exists = true;
+				str.append(rs.getString(1) + ":" + rs.getString(2) + ",");
+			}
+			
+			if(exists)
+				str.setCharAt(str.lastIndexOf(","), ' ');
+			
+			return str.toString();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

@@ -7,8 +7,11 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface MeetingSchedulingService extends RemoteService  {
 	
 	public boolean registerPollResponse(int pollId, String pollMetadataJSON, String dateTimesJSONString);
-	public String getAvailableParticipants(int pollId);
+	public String getAvailableParticipantsNameComments(int trackingPollId);
 	public boolean scheduleMeeting(int pollId, String scheduleDateTimeJSON);
-	public String getUnavailableParticipants(int pollId);
-	public String getBestScheduleTimes(int pollId);
+	public String getUnavailableParticipants(int trackingPollId);
+	public String getBestScheduleTimes(int trackingPollId);
+	public String getDateTimeParticipants(Integer trackingPollId);
+	public String getAvailableParticipantsFor(int trackingPollId, String dateTime);
+	
 }
