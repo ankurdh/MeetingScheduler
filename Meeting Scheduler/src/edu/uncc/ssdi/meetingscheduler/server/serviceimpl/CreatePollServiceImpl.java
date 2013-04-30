@@ -2,9 +2,13 @@ package edu.uncc.ssdi.meetingscheduler.server.serviceimpl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,6 +21,9 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import edu.uncc.ssdi.meetingscheduler.client.services.CreatePollService;
 import edu.uncc.ssdi.meetingscheduler.server.db.QueryHelper;
+import edu.uncc.ssdi.meetingscheduler.server.email.Email;
+import edu.uncc.ssdi.meetingscheduler.server.email.EmailFactory;
+import edu.uncc.ssdi.meetingscheduler.server.email.EmailHelper;
 import edu.uncc.ssdi.meetingscheduler.server.jsonclasses.NameEmailIdJSONClass;
 import edu.uncc.ssdi.meetingscheduler.server.jsonclasses.PollCreationDateTimeJSONClass;
 import edu.uncc.ssdi.meetingscheduler.server.jsonclasses.PollCreationMetadataJSONClass;
@@ -28,10 +35,7 @@ public class CreatePollServiceImpl extends RemoteServiceServlet implements Creat
 
 	@Override
 	public Integer setPollDetails(String metaDataJSONString, String dateTimeJSONString) {
-		log.debug("JSON String from client: " + dateTimeJSONString);
-		log.debug("JSON string for poll details: " + metaDataJSONString);
 		
-		PollCreationMetadataJSONClass pcmjc = new Gson().fromJson(metaDataJSONString, PollCreationMetadataJSONClass.class);
 		JsonArray pollDateTimeArray = new JsonParser().parse(dateTimeJSONString).getAsJsonArray();
 
 		int nextMplId = QueryHelper.getNextIndex("select max(mpl_id) from test.meeting_poll");
@@ -273,6 +277,24 @@ public class CreatePollServiceImpl extends RemoteServiceServlet implements Creat
 			
 			QueryHelper.makeCommit();
 			QueryHelper.setAutoCommit(true);
+			
+			//DB update successful. Sendout emails to the members.
+			ArrayList<String> subjectAndBody = EmailHelper.getSubjectAndBodyForPollCreation(pollId, getPollStarterName(metaDataJSONString), "http://127.0.0.1:8888/RespondToRequest.html?gwt.codesvr=127.0.0.1:9997");
+			Email emailer = EmailFactory.getInstance();
+			
+			for(int i = 0 ; i < nameEmailIdJSONArray.size(); i++){
+				NameEmailIdJSONClass neijc = new Gson().fromJson(nameEmailIdJSONArray.get(i), NameEmailIdJSONClass.class);
+				
+				try {
+					emailer.send(neijc.getEmailId(), subjectAndBody.get(0), subjectAndBody.get(1));
+					log.debug("email sent successfully to " + neijc.getEmailId());
+				} catch (AddressException e) {
+					log.error("Failed to send email.", e);
+				} catch (MessagingException e) {
+					log.error("Failed to send email.", e);
+				}
+			}
+			
 		} catch (JsonSyntaxException e) {
 			e.printStackTrace();
 			return -1;
@@ -282,6 +304,10 @@ public class CreatePollServiceImpl extends RemoteServiceServlet implements Creat
 		}
 		
 		return pollId;
+	}
+
+	private String getPollStarterName(String metaDataJSONString) {
+		return new Gson().fromJson(metaDataJSONString, PollCreationMetadataJSONClass.class).getOrganizer();		
 	}
 
 	@Override
