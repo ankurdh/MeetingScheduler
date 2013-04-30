@@ -34,8 +34,11 @@ public class Meeting_Scheduler implements EntryPoint, StateListener {
 			break;
 			
 		case State.LOGGED_IN:
-			//TODO do the login page.
 			RootPanel.get("panel").clear();
+			RootPanel.get("panel").add(PanelHelper.getPanel(State.LOGGED_IN));
+			break;
+			//TODO do the login page.
+			
 			
 		case State.START_POLL:
 			//TODO do the start poll page
