@@ -3,6 +3,7 @@ package edu.uncc.ssdi.meetingscheduler.client.panels;
 import com.extjs.gxt.ui.client.event.ButtonEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.Dialog;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.Label;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.extjs.gxt.ui.client.widget.button.Button;
@@ -15,6 +16,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import edu.uncc.ssdi.meetingscheduler.client.jsonoverlayclasses.PollTrackingInfo;
 import edu.uncc.ssdi.meetingscheduler.client.services.MeetingSchedulingService;
@@ -57,6 +59,7 @@ public class TrackResponsesPanel implements Panel {
 		
 		buttonsPanel.add(getScheduleMeetingButton());
 		buttonsPanel.add(getAvailableParticipantsButton());
+		buttonsPanel.add(getRemindUnparticipatedParticipants());
 		
 		corePanel.add(buttonsPanel);
 		
@@ -64,6 +67,31 @@ public class TrackResponsesPanel implements Panel {
 		
 	}
 	
+	private Widget getRemindUnparticipatedParticipants() {
+		
+		Button reminderButton = new Button("Remind Unresponsive Participants", new SelectionListener<ButtonEvent>(){
+
+			@Override
+			public void componentSelected(ButtonEvent ce) {
+				
+				meetingSchedulingService.remindParticipants(pollId, new AsyncCallback<Boolean>(){
+
+					@Override
+					public void onFailure(Throwable caught) {
+					}
+
+					@Override
+					public void onSuccess(Boolean result) {
+					}
+				});
+			}
+		});
+		Info.display("Success", "Server Requested to send emamil reminders");
+
+		return reminderButton;
+		
+	}
+
 	private Button getAvailableParticipantsButton() {
 		Button availableParticipantsButton = new Button("See who's available", new SelectionListener<ButtonEvent>(){
 
@@ -90,7 +118,7 @@ public class TrackResponsesPanel implements Panel {
 
 			@Override
 			public void componentSelected(ButtonEvent ce) {
-				Radio radio = rg.getValue();
+				final Radio radio = rg.getValue();
 				
 				if(!radio.getValue()){
 					MessageBox.alert("Error", "Please select a date-time", null);
@@ -105,8 +133,9 @@ public class TrackResponsesPanel implements Panel {
 
 					@Override
 					public void onSuccess(Boolean result) {
-						if(result)
-							MessageBox.info("Success", "Meeting scheduled successfully", null);						
+						if(result){
+							MessageBox.info("Success", "Meeting scheduled successfully", null);
+						}
 					}
 				});
 			}
@@ -121,7 +150,7 @@ public class TrackResponsesPanel implements Panel {
 
 			@Override
 			public void onFailure(Throwable caught) {
-				// TODO Auto-generated method stub
+				MessageBox.alert("Error", "Server threw an error: " + caught.getMessage(), null);
 			}
 
 			@Override

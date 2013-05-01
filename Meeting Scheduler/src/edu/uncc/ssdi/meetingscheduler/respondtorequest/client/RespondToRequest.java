@@ -60,6 +60,10 @@ public class RespondToRequest implements EntryPoint {
 									RootPanel.get("respondPanel").add(new TrackResponsesPanel(result, pollId).getPanel());
 								else 
 									RootPanel.get("respondPanel").add(new RespondPanel(result, pollId).getPanel());
+							} else {
+								
+								MessageBox.info("Err..", "No responses yet!", null);
+								
 							}
 							
 						}

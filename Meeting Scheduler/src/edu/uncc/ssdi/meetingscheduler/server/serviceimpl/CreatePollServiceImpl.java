@@ -53,7 +53,7 @@ public class CreatePollServiceImpl extends RemoteServiceServlet implements Creat
 			PollCreationMetadataJSONClass pcmjs = new Gson().fromJson(metaDataJSONString, PollCreationMetadataJSONClass.class);
 			String s = "insert into test.meeting values (" + nextMeetingId + " ," 
 					+ nextMplId + ", '" + pcmjs.getSubject() + "', " + pcmjs.getDuration()
-					+ ", '" + pcmjs.getDesc() + "', FALSE, '" + pcmjs.getOrganizer() + "', '"+ pcmjs.getLocation() +"')";
+					+ ", '" + pcmjs.getDesc() + "', FALSE, '" + pcmjs.getOrganizer() + "', '"+ pcmjs.getLocation() +"', NOW())";
 			QueryHelper.fireInsert(s);			
 			
 			for(int i = 0; i < pollDateTimeArray.size() ; i ++){

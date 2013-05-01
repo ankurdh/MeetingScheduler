@@ -13,5 +13,7 @@ public interface MeetingSchedulingService extends RemoteService  {
 	public String getBestScheduleTimes(int trackingPollId);
 	public String getDateTimeParticipants(Integer trackingPollId);
 	public String getAvailableParticipantsFor(int trackingPollId, String dateTime);
+	public String getMeetingMetadata(int pollId);
+	public boolean remindParticipants(int pollId);
 	
 }

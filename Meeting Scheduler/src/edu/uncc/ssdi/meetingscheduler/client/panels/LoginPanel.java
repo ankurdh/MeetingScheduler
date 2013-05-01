@@ -24,12 +24,6 @@ import edu.uncc.ssdi.meetingscheduler.client.state.UserLoginState;
 
 public class LoginPanel implements Panel, QueryGenerator, JSONDataRequestor {
 	
-	//Google sign in constants. 
-	private static final Auth AUTH = Auth.get();
-	private static final String GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/auth";
-    private static final String GOOGLE_CLIENT_ID = "1067405885626-2bk3p3u8gu0t50kamr1k5nehp6dk29p1.apps.googleusercontent.com";
-	private static final String PLUS_ME_SCOPE = "https://www.googleapis.com/auth/plus.me";
-	
 	//create a handle to the LoginServiceAsync RMI class.
 	private final LoginServiceAsync loginService = GWT.create(LoginService.class);
 	
@@ -94,25 +88,7 @@ public class LoginPanel implements Panel, QueryGenerator, JSONDataRequestor {
 			@SuppressWarnings("deprecation")
 			@Override
 			public void componentSelected(ButtonEvent ce) {
-				AUTH.clearAllTokens();
-				final AuthRequest req = new AuthRequest(GOOGLE_AUTH_URL, GOOGLE_CLIENT_ID).withScopes(PLUS_ME_SCOPE);
-				
-				AUTH.login(req, new Callback<String, Throwable>() {
-			          @Override
-			          public void onSuccess(String token) {
-			            Window.alert("Got an OAuth token:\n" + token + "\n"
-			                + "Token expires in " + AUTH.expiresIn(req) + " ms\n");
-			          }
-
-			          @Override
-			          public void onFailure(Throwable caught) {
-			            Window.alert("Error:\n" + caught.getMessage());
-			          }
-			        });
-				
-				Auth.export();
-				
-//				StateHelper.setState(State.LOGGED_IN);
+				StateHelper.setState(State.LOGGED_IN);
 			}
 			
 		});

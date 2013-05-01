@@ -11,10 +11,12 @@ import com.extjs.gxt.ui.client.widget.form.TextArea;
 import com.extjs.gxt.ui.client.widget.form.TextField;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -69,6 +71,9 @@ public class CreatePollPanel implements Panel {
 
 			@Override
 			public void componentSelected(ButtonEvent ce) {
+				
+				DOM.setInnerHTML(RootPanel.get("loadingMessage").getElement(), "Please wait " + " &nbsp;<img src=\"images/ajax-loader.gif\" height=15>&nbsp;");
+				
 				String dateTimeJSONString = null;
 				try {
 					dateTimeJSONString = CustomFlexTableHelper.getTimesAndDatesAsJSON(dateTimeWidget.getCustomFlexTable());
@@ -90,7 +95,7 @@ public class CreatePollPanel implements Panel {
 						@Override
 						public void onFailure(Throwable caught) {
 							// TODO Auto-generated method stub
-							
+							DOM.setInnerHTML(RootPanel.get("loadingMessage").getElement(), "<br>");
 						}
 
 						@Override
@@ -98,6 +103,7 @@ public class CreatePollPanel implements Panel {
 							if(result != -1){ 
 									pollId = result;
 									getPollTrackingIdAndDisplayInfo();
+									DOM.setInnerHTML(RootPanel.get("loadingMessage").getElement(), "<br>");
 							}
 						}
 						
@@ -119,7 +125,7 @@ public class CreatePollPanel implements Panel {
 								@Override
 								public void onFailure(Throwable caught) {
 									// TODO Auto-generated method stub
-									
+									DOM.setInnerHTML(RootPanel.get("loadingMessage").getElement(), "<br>");
 								}
 
 								@Override
@@ -127,10 +133,10 @@ public class CreatePollPanel implements Panel {
 									if(result != -1){ 
 										pollId = result;
 										getPollTrackingIdAndDisplayInfo();
+										RootPanel.get("panel").clear();
 									}
 									
-									//TODO: pass the participantNameEmailIdJSON object to the EmailHelper here. 
-									//or, should it be implemented at the server?
+									DOM.setInnerHTML(RootPanel.get("loadingMessage").getElement(), "<br>");
 									
 								}
 					});

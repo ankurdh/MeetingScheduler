@@ -4,6 +4,7 @@ public class PollResponseMetadataJSONClass {
 	
 	private String name;
 	private String comments;
+	private String email;
 	private Boolean isUnavailable;
 	
 	public PollResponseMetadataJSONClass() {}
@@ -30,5 +31,13 @@ public class PollResponseMetadataJSONClass {
 
 	public void setIsAvailable(Boolean isAvailable) {
 		this.isUnavailable = isAvailable;
+	}
+	
+	public void setEmail(String email){
+		this.email = email;
+	}
+	
+	public String getEmail(){
+		return email;
 	}
 }

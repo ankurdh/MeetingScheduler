@@ -11,4 +11,6 @@ public interface MeetingSchedulingServiceAsync {
 	void getBestScheduleTimes(int trackingPollId, AsyncCallback<String> callback);
 	void getDateTimeParticipants(Integer trackingPollId, AsyncCallback<String> asyncCallback);
 	void getAvailableParticipantsFor(int trackingPollId, String dateTime, AsyncCallback<String> callback);
+	void getMeetingMetadata(int pollId, AsyncCallback<String> callback);
+	void remindParticipants(int pollId, AsyncCallback<Boolean> callback);
 }

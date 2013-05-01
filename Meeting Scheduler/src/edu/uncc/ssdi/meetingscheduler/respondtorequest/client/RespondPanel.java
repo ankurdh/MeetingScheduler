@@ -38,6 +38,7 @@ public class RespondPanel implements Panel {
 	
 	private RespondToPollCustomFlexTable customFlexTable;
 	private TextField<String> nameTextField;
+	private TextField<String> emailIdTextField;
 	private TextArea commentsTextArea;
 	private CheckBox unavailableCheckBox;
 	private Button submitButton;
@@ -53,6 +54,7 @@ public class RespondPanel implements Panel {
 		cannotAttendAndCommentsPanel = new VerticalPanel();
 		
 		nameTextField = new TextField<String>();
+		emailIdTextField = new TextField<String>();
 		commentsTextArea = new TextArea();
 		unavailableCheckBox = new CheckBox();
 		submitButton = new Button("Submit");
@@ -125,7 +127,13 @@ public class RespondPanel implements Panel {
 		nameTextField.setAllowBlank(false);
 		nameTextField.setMessageTarget("tooltip");
 		nameTextField.setShim(true);
-		nameTextField.setWidth("450px");
+		nameTextField.setWidth("220px");
+		
+		emailIdTextField.setAutoWidth(true);
+		emailIdTextField.setShim(true);
+		emailIdTextField.setAllowBlank(false);
+		emailIdTextField.setMessageTarget("tooltip");
+		emailIdTextField.setWidth("220px");
 		
 		commentsTextArea.setAutoWidth(true);
 		commentsTextArea.setShim(true);
@@ -139,11 +147,14 @@ public class RespondPanel implements Panel {
 		userDataFlexTable.setWidget(0, 0, new Label("Name: "));
 		userDataFlexTable.setWidget(0, 1, nameTextField);
 		
-		userDataFlexTable.setWidget(1, 0, new Label("Cannot Attend? "));
-		userDataFlexTable.setWidget(1, 1, unavailableCheckBox);
+		userDataFlexTable.setWidget(1, 0, new Label("Email Id: "));
+		userDataFlexTable.setWidget(1, 1, emailIdTextField);
 		
-		userDataFlexTable.setWidget(2, 0, new Label("Comments: "));
-		userDataFlexTable.setWidget(2, 1, commentsTextArea);
+		userDataFlexTable.setWidget(2, 0, new Label("Cannot Attend? "));
+		userDataFlexTable.setWidget(2, 1, unavailableCheckBox);
+		
+		userDataFlexTable.setWidget(3, 0, new Label("Comments: "));
+		userDataFlexTable.setWidget(3, 1, commentsTextArea);
 		
 		cannotAttendAndCommentsPanel.add(userDataFlexTable);
 		cannotAttendAndCommentsPanel.setBorderWidth(1);
@@ -179,11 +190,13 @@ public class RespondPanel implements Panel {
 			public void componentSelected(ButtonEvent ce) {
 				String responseMetadataString = getResponseMetadataJSONString();
 				String responseTimesString = "";
-				try {
-					responseTimesString = customFlexTable.getResponseJSONString();
-				} catch (ObjectUnInitializedException e) {
-					MessageBox.info("Error!", e.getMessage(), null);
-					return;
+				if(!unavailableCheckBox.getValue()){
+					try {
+						responseTimesString = customFlexTable.getResponseJSONString();
+					} catch (ObjectUnInitializedException e) {
+						MessageBox.info("Error!", e.getMessage(), null);
+						return;
+					}
 				}
 				  
 				meetingSchedulerHandle.registerPollResponse(pollId, responseMetadataString, responseTimesString, 
@@ -191,8 +204,7 @@ public class RespondPanel implements Panel {
 
 							@Override
 							public void onFailure(Throwable caught) {
-								// TODO handle error here.
-								
+								MessageBox.alert("Error!", "Something went wrong!", null);
 							}
 
 							@Override
@@ -249,6 +261,7 @@ public class RespondPanel implements Panel {
 		sb.append("{\n");
 		
 		sb.append("\"name\":"+ "\"" + nameTextField.getValue() + "\",\n");
+		sb.append("\"email\":" + "\"" + emailIdTextField.getValue() + "\",\n");
 		sb.append("\"isUnavailable\":" + "\"" + unavailableCheckBox.getValue() + "\",\n");
 		sb.append("\"comments\":" + "\"" + commentsTextArea.getValue() + "\"\n");
 		
