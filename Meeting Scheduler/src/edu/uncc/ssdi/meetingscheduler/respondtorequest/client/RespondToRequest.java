@@ -1,21 +1,8 @@
-/*******************************************************************************
- * Copyright 2011 Google Inc. All Rights Reserved.
- *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *******************************************************************************/
 package edu.uncc.ssdi.meetingscheduler.respondtorequest.client;
 
 import com.extjs.gxt.ui.client.event.Listener;
 import com.extjs.gxt.ui.client.event.MessageBoxEvent;
+import com.extjs.gxt.ui.client.widget.Info;
 import com.extjs.gxt.ui.client.widget.MessageBox;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.shared.GWT;
@@ -25,6 +12,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 import edu.uncc.ssdi.meetingscheduler.client.panels.TrackResponsesPanel;
 import edu.uncc.ssdi.meetingscheduler.client.services.CreatePollService;
 import edu.uncc.ssdi.meetingscheduler.client.services.CreatePollServiceAsync;
+import edu.uncc.ssdi.meetingscheduler.client.services.MeetingSchedulingService;
+import edu.uncc.ssdi.meetingscheduler.client.services.MeetingSchedulingServiceAsync;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -36,6 +25,7 @@ public class RespondToRequest implements EntryPoint {
 	public void onModuleLoad() {
 		
 		final CreatePollServiceAsync pollService = GWT.create(CreatePollService.class);
+		final MeetingSchedulingServiceAsync meetingSchedulingService = GWT.create(MeetingSchedulingService.class);
 		
 		MessageBox.prompt("Welcome", "Enter the poll id: ", new Listener<MessageBoxEvent> (){
 
@@ -62,10 +52,28 @@ public class RespondToRequest implements EntryPoint {
 									RootPanel.get("respondPanel").add(new RespondPanel(result, pollId).getPanel());
 							} else {
 								
-								MessageBox.info("Err..", "No responses yet!", null);
-								
+								MessageBox.confirm("Err..", "No responses yet! Send out reminders to invitees?", new Listener<MessageBoxEvent>(){
+
+									@Override
+									public void handleEvent(MessageBoxEvent be) {
+										if(be.getButtonClicked().getItemId().equalsIgnoreCase("yes")){
+											
+											meetingSchedulingService.remindParticipants(pollId, new AsyncCallback<Boolean>(){
+
+												@Override
+												public void onFailure(Throwable caught) {
+													Info.display("Failed!", "Failed to send emails! We're looking into it!");
+												}
+
+												@Override
+												public void onSuccess(Boolean result) {
+													Info.display("Success", "Email reminders sent!");
+												}
+											});
+										}
+									}
+								});
 							}
-							
 						}
 					});
                 }

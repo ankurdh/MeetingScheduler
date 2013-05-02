@@ -1,6 +1,8 @@
 package edu.uncc.ssdi.meetingscheduler.client.panels;
 
 import com.extjs.gxt.ui.client.event.ButtonEvent;
+import com.extjs.gxt.ui.client.event.Listener;
+import com.extjs.gxt.ui.client.event.MessageBoxEvent;
 import com.extjs.gxt.ui.client.event.SelectionListener;
 import com.extjs.gxt.ui.client.widget.Dialog;
 import com.extjs.gxt.ui.client.widget.Info;
@@ -74,16 +76,7 @@ public class TrackResponsesPanel implements Panel {
 			@Override
 			public void componentSelected(ButtonEvent ce) {
 				
-				meetingSchedulingService.remindParticipants(pollId, new AsyncCallback<Boolean>(){
-
-					@Override
-					public void onFailure(Throwable caught) {
-					}
-
-					@Override
-					public void onSuccess(Boolean result) {
-					}
-				});
+				remindParticipants();
 			}
 		});
 		Info.display("Success", "Server Requested to send emamil reminders");
@@ -92,6 +85,19 @@ public class TrackResponsesPanel implements Panel {
 		
 	}
 
+	private void remindParticipants(){
+		meetingSchedulingService.remindParticipants(pollId, new AsyncCallback<Boolean>(){
+
+			@Override
+			public void onFailure(Throwable caught) {
+			}
+
+			@Override
+			public void onSuccess(Boolean result) {
+			}
+		});
+	}
+	
 	private Button getAvailableParticipantsButton() {
 		Button availableParticipantsButton = new Button("See who's available", new SelectionListener<ButtonEvent>(){
 
@@ -157,7 +163,15 @@ public class TrackResponsesPanel implements Panel {
 			public void onSuccess(String result) {
 				
 				if(result == null){
-					MessageBox.info("Results", "No responses yet!", null);
+					MessageBox.info("Results", "No responses yet!", new Listener<MessageBoxEvent>(){
+
+						@Override
+						public void handleEvent(MessageBoxEvent be) {
+							if(be.getButtonClicked().getId().equalsIgnoreCase("ok"))
+								Info.display("Hi", "Ok button clicked");
+						}
+						
+					});
 					return;
 				}
 				

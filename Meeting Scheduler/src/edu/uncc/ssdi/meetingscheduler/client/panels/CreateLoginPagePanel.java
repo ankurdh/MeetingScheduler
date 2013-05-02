@@ -12,7 +12,6 @@ import com.google.api.gwt.services.calendar.shared.model.CalendarList;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.SimpleEventBus;
-
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -26,11 +25,8 @@ public class CreateLoginPagePanel implements Panel{
 
 	//CreatePollServiceAsync createPollService = GWT.create(CreatePollService.class);
 
-	private VerticalPanel verticalPanel;
-	private HorizontalPanel hp1;
-	private HorizontalPanel hp2;
-	private Button startPollregistered = new Button();
 	private HorizontalPanel horizontalPanel;
+	private Button startPollregistered = new Button();
 	static final String CLIENT_ID = "545574083114.apps.googleusercontent.com";
 	static final String API_KEY = "AIzaSyAHvcrUNGmQ3ffesG-eQs35yhD5AfozzoU";
 	static final String APPLICATION_NAME = "SSDI/1.0";
@@ -46,13 +42,10 @@ public class CreateLoginPagePanel implements Panel{
 	}
 	@Override
 	public void update() {
-		// TODO Auto-generated method stub
 
 	}
 	
 	//google cal panel
-	
-	
 	//login
 	   void login() {
 		    OAuth2Login.get().authorize(CLIENT_ID, CalendarAuthScope.CALENDAR,
@@ -69,12 +62,6 @@ public class CreateLoginPagePanel implements Panel{
 		          }
 		        });
 		  }
-
-	  
-	  
-	  
-	  
-	  
 	  //login ends
 	  
 	  // get calendar begins
@@ -87,68 +74,31 @@ public class CreateLoginPagePanel implements Panel{
 		          public void onSuccess(CalendarList list) {
 		            String calendarId = list.getItems().get(0).getId();
 		            String [] a = calendarId.split("@");
-		          // String calendarUrl = "http://www.google.com/calendar/feeds/"+calendarId+"/private/full";
-		            String calendarUrl = "https://www.google.com/calendar/feeds/saurabh.mahamine@gmail.com/public/full";
 		            String pcalendarUrl = "https://www.google.com/calendar/embed?src="+a[0].toString()+"%40gmail.com";
 		            System.out.println("calendar id is "+calendarId);
 		            System.out.println(pcalendarUrl);
 		            show(pcalendarUrl);
-		           // insertEvent(calendarId);
 		          }
 
 				private void show(String pcalendarUrl) {
-					// TODO Auto-generated method stub
 					Frame googleCalendar = new Frame(pcalendarUrl);
 					startPollregistered.setVisible(true);
 					googleCalendar.setWidth("500px");
 					googleCalendar.setHeight("500px");
 					controlsPanel.add(googleCalendar);
-					//controlsPanel.add(createNewEventPanel());
-					//controlsPanel.add(createEventEditPanel());
 					controlsPanel.setSpacing(10);
-					 
-					//RootPanel.get().add(controlsPanel);
 				}
-		        });
+	        });
 	  }
-	   
-	   //
-	   
-//	   HorizontalPanel getPanel()
-//	   {
-//		   initialize();
-//		   return controlsPanel;
-//	   }
-	   
 	
 	//google cal panel
 	
-	   private Button gettSartPollregisteredButton() {
+	   private Button getStartPollButton() {
 			Button btn = new Button("Start Poll", new SelectionListener<ButtonEvent>(){
 
 				@Override
 				public void componentSelected(ButtonEvent ce) {
-					// TODO Auto-generated method stub -- 
 					StateHelper.setState(State.START_POLL);
-					//UserLoginState.setUserLoginState(true);
-				}
-				
-			});
-			
-			btn.setAutoWidth(true);
-			btn.setAutoHeight(true);
-			return btn;
-		}
-
-	   
-	   private Button gettTrackPollButton() {
-			Button btn = new Button("Track Poll", new SelectionListener<ButtonEvent>(){
-
-				@Override
-				public void componentSelected(ButtonEvent ce) {
-					// TODO Auto-generated method stub -- 
-					//StateHelper.setState(State.START_POLL);
-					//UserLoginState.setUserLoginState(true);
 				}
 				
 			});
@@ -160,29 +110,22 @@ public class CreateLoginPagePanel implements Panel{
 	   
 	@Override
 	public void initialize() {
-		// TODO Auto-generated method stub
 		calendar.initialize(new SimpleEventBus(),
 		new GoogleApiRequestTransport(APPLICATION_NAME, API_KEY));
 		login();
-		hp1 = new HorizontalPanel();
-		hp2 = new HorizontalPanel();
-		//Button startPollregistered = gettSartPollregisteredButton();
-		startPollregistered = gettSartPollregisteredButton();
+		horizontalPanel = new HorizontalPanel();
+		
+		startPollregistered = getStartPollButton();
 		startPollregistered.setVisible(false);
-		hp2.add(startPollregistered);
-		hp2.setSpacing(5);
-		//hp2.add(b);
-		//hp1 = controlsPanel;
-		//verticalPanel.add(controlsPanel);
-		//RootPanel.get("panel").add(controlsPanel);
+		horizontalPanel.add(startPollregistered);
+		horizontalPanel.setSpacing(5);
 		
 		horizontalPanel.add(controlsPanel);
-		horizontalPanel.add(hp2);
+		horizontalPanel.add(horizontalPanel);
 	}
 
 	@Override
 	public com.google.gwt.user.client.ui.Panel getPanel() {
-		// TODO Auto-generated method stub
 		return horizontalPanel;
 	}
 
